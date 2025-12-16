@@ -1,4 +1,4 @@
-@startuml
+@startuml as_is_ddd
 !includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
 Person(user, "Пользователь", "Пользователь системы управления и мониторинга сенсоров")

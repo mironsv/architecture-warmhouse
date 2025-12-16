@@ -186,10 +186,16 @@ build/
 ### VS Code ###
 .vscode/
 
+### Python ###
+.venv/
+
 ### Mac OS ###
 .DS_Store
 
-
+architecture-warmhouse.code-workspace
+bin/
+pyvenv.cfg
+lib/
+lib64
 tmp/
 task-*
-architecture-warmhouse.code-workspace

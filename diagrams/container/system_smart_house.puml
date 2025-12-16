@@ -1,0 +1,35 @@
+@startuml containers
+!include C4_Container.puml
+
+Person(user, "Пользователь", "Пользователь системы")
+Person(admin, "Администратор", "Администратор системы")
+Person(sales_manager, "Менеджер продаж", "Роль с доступом на чтение")
+
+System_Boundary(system, "System Smart Home") {
+  Container(web_app, "Web Application", "Go", "Обрабатывает взаимодействие пользователя с системой")
+  Container(devices_api, "API Сервис интеграции с устройствами", "Python", "Получение данных и управление устройствами")
+  Container(telemetry, "Сервис телеметрии", "Java", "Сбор и хранение данных с устройств")
+  Container(notification, "Сервис оповещения", "Java", "Оповещение пользователей, служб быстрого реагирования")
+  Container(message_broker, "Брокер сообщений", "Kafka/RabbitMQ", "Передача событий")
+  ContainerDb(db_sql, "БД SQL", "PostgreSQL", "Пользователи, устройства, сценарии")
+  ContainerDb(db_clickhouse, "БД OLAP", "Clickhouse", "Данные телеметрии")
+}
+
+System_Ext(device1, "Устройство 1", "температура, отопление, свет, ворота, камера и др.)")
+System_Ext(device2, "Устройство 2", "температура, отопление, свет, ворота, камера и др.)")
+System_Ext(email_sender, "Email Sender", "Внешний сервис отправки email")
+
+Rel(user, web_app, "Управляет модулями, настраивает сценарии")
+Rel(admin, web_app, "Управляет системой")
+Rel(sales_manager, web_app, "Просматривает данные системы (устройства, пользователи)")
+Rel(web_app, db_sql, "Хранение данных пользователей и устройств", "SQL")
+Rel(web_app, telemetry, "Мониторинг данных с устройств", "REST API")
+Rel(web_app, devices_api, "Управление устройствами (регистрация, получение и обновление состояния)", "[REST API, RTSP]")
+Rel(telemetry, db_clickhouse, "Хранение телеметрии", "SQL")
+Rel(telemetry, notification, "Оповещение", "REST API")
+Rel(notification, email_sender, "Взаимодействие с отправителем")
+Rel(devices_api, message_broker, "Публикация телеметрии с устройства")
+Rel(message_broker, telemetry, "Получение телеметрии с устройства")
+Rel(devices_api, device1, "Связь с устройством")
+Rel(devices_api, device2, "Связь с устройством")
+@enduml
