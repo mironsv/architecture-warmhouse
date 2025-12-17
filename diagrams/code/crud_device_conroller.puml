@@ -4,26 +4,37 @@ title Smart Home Devices Management Code Diagram
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
 class User {
+  +Int id
   +String login
+  +String email
+  +String phone
+  +String role
+  +List<Device> devices
+}
+
+class House {
+  +Int id
+  +String address
   +List<Device> devices
 }
 
 class Device {
-  +String id
+  +Int id
   +String name
   +String type
   +String location
-  +String value
+  +Float value
   +String unit
   +String status
   +Date lastUpdated
   +Date createdAt
-  +void create()
-  +void read()
-  +void update()
-  +void delete()
+  ~void create()
+  ~void read()
+  ~void update()
+  ~void delete()
 }
 
 User "1" -- "0..*" Device : has
+House "1" -- "0..*" Device : has
 
 @enduml

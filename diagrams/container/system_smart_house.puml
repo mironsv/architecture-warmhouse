@@ -1,9 +1,10 @@
 @startuml containers
+title Система Умный Дом - Диаграмма контейнеров
 !include C4_Container.puml
 
-Person(user, "Пользователь", "Пользователь системы")
-Person(admin, "Администратор", "Администратор системы")
-Person(sales_manager, "Менеджер продаж", "Роль с доступом на чтение")
+Person(user, "Пользователь", "Роль: Пользователь системы")
+Person(admin, "Администратор", "Роль: Администратор системы") #Green
+Person(sales_manager, "Менеджер продаж", "Роль: только чтение")
 
 System_Boundary(system, "System Smart Home") {
   Container(web_app, "Web Application", "Go", "Обрабатывает взаимодействие пользователя с системой")
@@ -28,6 +29,7 @@ Rel(web_app, devices_api, "Управление устройствами (рег
 Rel(telemetry, db_clickhouse, "Хранение телеметрии", "SQL")
 Rel(telemetry, notification, "Оповещение", "REST API")
 Rel(notification, email_sender, "Взаимодействие с отправителем")
+Rel(notification, db_sql, "Получение данных пользователей для оповещения", "SQL")
 Rel(devices_api, message_broker, "Публикация телеметрии с устройства")
 Rel(message_broker, telemetry, "Получение телеметрии с устройства")
 Rel(devices_api, device1, "Связь с устройством")
