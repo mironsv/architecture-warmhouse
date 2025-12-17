@@ -23,7 +23,7 @@ class Device {
   +String name
   +String type
   +String location
-  +Float value
+  +String value
   +String unit
   +String status
   +Date lastUpdated

@@ -9,8 +9,8 @@ Container(web_app, "Web Application", "Go") {
   Component(repository, "Repository Layer", "Доступ к хранилищу данных")
 }
 
-Rel(auth_conroller, service_layer, "Передаёт команды управления")
-Rel(crud_device_conroller, service_layer, "Передаёт команды управления")
-Rel(management_device_conroller, service_layer, "Передаёт команды управления")
+Rel(auth_conroller, service_layer, "Получает информацию об авторизации пользователя")
+Rel(crud_device_conroller, service_layer, "Управляет информацией о датчиках")
+Rel(management_device_conroller, service_layer, "Передаёт команды управления и получает актуальные данные")
 Rel(service_layer, repository, "CRUD операции с данными")
 @enduml

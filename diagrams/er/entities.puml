@@ -27,17 +27,18 @@ entity House {
 }
 
 entity Device {
-  -pk(id): UUID
+  -pk(id): long
   +type: string
   +user_id: long
-  +house_id: UUID
+  +house_id: long
+  +location: string
   +status: enum
 }
 
 entity TelemetryData {
-  -pk(id): UUID
-  +device_id: UUID
-  +value: float
+  -pk(id): long
+  +device_id: long
+  +value: string
   +date: datetime
 }
 
