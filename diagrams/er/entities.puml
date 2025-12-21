@@ -1,0 +1,51 @@
+@startuml er
+skinparam backgroundcolor AntiqueWhite/Gold
+
+!define pk(x) <u>x</u>
+
+entity User {
+  -pk(id): long
+  +login: string
+  +tg: string
+  +email: string
+  +phone: string
+  +role: enum
+  +created_at: datetime
+}
+
+entity UserSettings {
+  -pk(id): long
+  +user_id: long
+  +email_notification: boolean
+  +tg_notification: boolean
+}
+
+entity House {
+  -pk(id): long
+  +user_id: long
+  +address: string
+}
+
+entity Device {
+  -pk(id): long
+  +type: string
+  +user_id: long
+  +house_id: long
+  +location: string
+  +status: enum
+}
+
+entity TelemetryData {
+  -pk(id): long
+  +device_id: long
+  +value: string
+  +date: datetime
+}
+
+User "1" -- "1" UserSettings
+User "1" *-- Device : has
+House "1" *-- Device
+User "1" *-- "*" House : has
+Device "1" *-- "*" TelemetryData
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml web_app
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(web_app, "Web Application", "Go") {
+  Component(auth_conroller, "Auth Controller", "Аутентификация и авторизация пользователей")
+  Component(crud_device_conroller, "CRUD Device Controller", "Операции создания, чтения, обновления и удаления устройств")
+  Component(management_device_conroller, "Management Device Controller", "Управление добавленными устройствами")
+  Component(service_layer, " Service Layer", "Хранение и обновление данных о пользователях и устройствах")
+  Component(repository, "Repository Layer", "Доступ к хранилищу данных")
+}
+
+Rel(auth_conroller, service_layer, "Получает информацию об авторизации пользователя")
+Rel(crud_device_conroller, service_layer, "Управляет информацией о датчиках")
+Rel(management_device_conroller, service_layer, "Передаёт команды управления и получает актуальные данные")
+Rel(service_layer, repository, "CRUD операции с данными")
+@enduml

@@ -1,0 +1,313 @@
+openapi: 3.1.0
+info:
+  title: Management System API - OpenAPI 3.1
+  description: API для взаимодействия с системой.
+  version: '1.0'
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: device
+    description: Действия с устройством
+  - name: user
+    description: Действия с пользователем
+paths:
+  /api/v1/devices:
+    get:
+      tags:
+        - device
+      summary: Получить список устройств пользователя
+      operationId: getDevices
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список устройств
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        '400':
+          description: Невалидный ID пользователя
+        '404':
+          description: Пользователь не найден
+        '422':
+          description: Ошибка валидации
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Добавить новое устройство
+      tags:
+        - device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '201':
+          description: Устройство создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '422':
+          description: Ошибка валидации
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/devices/{deviceId}:
+    get:
+      summary: Получить информацию об устройстве
+      tags:
+        - device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Информация об устройстве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          description: Устройство не найдено
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"               
+    put:
+      summary: Обновить устройство
+      tags:
+        - device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Устройство обновлено
+    delete:
+      summary: Удалить устройство
+      tags:
+        - device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Устройство удалено
+  /health:
+    get:
+      summary: Получить состояние сервисов в системе
+      responses:
+        '200':
+          description: Актуальное состояние сервисов в системе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemHealth'
+  /api/v1/devices/{deviceId}/command:
+    post:
+      summary: Отправить команду устройству
+      tags:
+        - device
+      description: Отправляет команду на выполнение конкретному устройству
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCommandRequest'
+      responses:
+        '200':
+          description: Команда принята и обработана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceCommandResponse'
+              examples:
+                success:
+                  value:
+                    status: 'accepted'
+                    result: 'Device turned on'
+        '400':
+          description: Ошибка в запросе, некорректная команда
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                bad_request:
+                  value:
+                    code: 400
+                    message: 'Invalid command'
+        '404':
+          description: Устройство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Device:
+      required:
+        - type
+        - location
+        - user_id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [123]
+        name:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+          description: Локация устройства
+          enum:
+            - Bedroom
+            - Kitchen
+            - Room
+            - Bathroom
+            - LivingRoom
+            - Garage
+            - Outdoors
+            - Other
+          examples: [Kitchen]
+        value:
+          type: string
+        unit:
+          type: string
+        user_id:
+          type: integer
+          format: int64
+        house_id:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum:
+            - on
+            - off
+            - error
+    SystemHealth:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Статус системы
+        checked_at:
+          type: string
+          format: date-time
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceHealth'
+    ServiceHealth:
+      type: object
+      properties:
+        service_id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: string
+          description: Статус микросервиса
+    DeviceCommandRequest:
+      type: object
+      required:
+        - command
+      properties:
+        command:
+          type: string
+          description: Имя команды
+          enum:
+            - turn_on
+            - turn_off
+            - set_value
+        value:
+          type: string
+    DeviceCommandResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - pending
+            - executed
+            - error
+          description: Статус обработки команды
+        result:
+          type: string
+          description: Дополнительная информация о результате выполнения
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+      required:
+        - code
+        - message
+  examples:
+    deviceExample:
+      summary: пример
+      value:
+        - id: 1
+          type: 'temperature'
+          user_id: 42
+          location: 'Kitchen'
+          name: 'device name'
+          value: '22.5'
+          unit: 'Celsius'
+          status: 'on'
